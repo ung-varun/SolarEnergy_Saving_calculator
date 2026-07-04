@@ -298,9 +298,9 @@
 
     <p class="section-title" style="margin-top:22px;">Step 3 — How will you pay?</p>
     <div class="segmented" id="financeButtons">
-      <div class="seg-btn" data-fin="loan">Bank Loan</div>
+      <div class="seg-btn active" data-fin="loan">Bank Loan</div>
       <div class="seg-btn" data-fin="hybrid">Down Payment Plus Loan</div>
-      <div class="seg-btn active" data-fin="cash">Pay Upfront</div>
+      <div class="seg-btn" data-fin="cash">Pay Upfront</div>
     </div>
 
     <div id="loanFields" style="display:none;">
@@ -471,7 +471,7 @@ const $ = id => document.getElementById(id);
 const CURRENT_YEAR = new Date().getFullYear();
 const calendarYear = y => CURRENT_YEAR + (y-1);
 
-let state = { segment:'home', finance:'cash' };
+let state = { segment:'home', finance:'loan' };
 
 document.querySelectorAll('#segmentButtons .seg-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
