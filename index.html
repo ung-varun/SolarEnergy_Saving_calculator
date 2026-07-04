@@ -91,6 +91,8 @@
     line-height:1.15;margin:0 0 6px;color:var(--navy);
   }
   h1 .g{color:var(--green);}
+  .mobile-break{display:none;}
+  @media (max-width:600px){.mobile-break{display:block;content:"";}}
   .hero p.lede{color:var(--muted);font-size:16px;max-width:600px;margin:14px 0 0;line-height:1.6;}
 
   /* ---------- CARD / PANEL ---------- */
@@ -141,8 +143,18 @@
   }
   input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);border:3px solid #fff;cursor:pointer;}
 
-  .assumptions-block{margin-top:8px;padding-top:18px;border-top:1px solid var(--line);}
-  .adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
+  details.assumptions-block{margin-top:8px;padding-top:18px;border-top:1px solid var(--line);}
+  details.assumptions-block summary{
+    cursor:pointer;list-style:none;
+    background:var(--cream-2);color:var(--navy);padding:12px 16px;border-radius:10px;
+    font-weight:600;font-size:13.5px;display:flex;justify-content:space-between;align-items:center;
+    border:1.5px solid var(--line);
+  }
+  details.assumptions-block summary::-webkit-details-marker{display:none;}
+  details.assumptions-block summary::after{content:"Show options";font-size:12px;color:var(--gold);font-weight:600;}
+  details.assumptions-block[open] summary::after{content:"Hide options";}
+  details.assumptions-block[open] summary{border-radius:10px 10px 0 0;}
+  .adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;padding:18px 4px 4px;}
   @media (max-width:520px){.adv-grid{grid-template-columns:1fr;}}
 
   /* ---------- RESULTS ---------- */
@@ -154,7 +166,7 @@
     color:#fff;border-radius:16px;padding:24px;
   }
   .metric-card .m-label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-2);margin-bottom:6px;}
-  .metric-card .m-value{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;margin-bottom:2px;word-break:break-word;}
+  .metric-card .m-value{font-family:'Inter',sans-serif;font-weight:700;font-size:24px;margin-bottom:2px;word-break:break-word;font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
   .metric-card .m-sub{font-size:12.5px;color:#B9C6D6;}
   .metric-row{display:flex;gap:22px;flex-wrap:wrap;margin-top:14px;}
   .metric-row .metric-card{flex:1;min-width:170px;padding:18px;}
@@ -165,7 +177,7 @@
     padding:26px 20px;margin-bottom:18px;
   }
   .headline-box .hb-label{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.85;margin-bottom:6px;}
-  .headline-box .hb-value{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(26px,4.6vw,40px);line-height:1.15;word-break:break-word;}
+  .headline-box .hb-value{font-family:'Inter',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,40px);line-height:1.15;word-break:break-word;font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
   .headline-box .hb-sub{font-size:13.5px;margin-top:8px;opacity:.9;}
 
   #chartCanvas, #gapChartCanvas{width:100% !important;height:230px !important;}
@@ -186,7 +198,7 @@
   details.year-table summary::after{content:"Show table";font-size:12.5px;color:var(--gold-2);font-weight:600;}
   details.year-table[open] summary::after{content:"Hide table";}
   .table-scroll{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:12px;}
-  table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12.5px;min-width:640px;}
+  table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:500;min-width:640px;}
   th{
     text-align:right;color:var(--white);font-weight:600;background:var(--navy-2);
     padding:10px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
@@ -254,7 +266,7 @@
 
   <section class="hero">
     <span class="ribbon">Powering a cleaner and brighter tomorrow</span>
-    <h1>Cut your electricity bill.<br>Invest once. <span class="g">Save for 25+  years.</span></h1>
+    <h1>Cut your electricity bill.<br>Invest once. <br class="mobile-break"><span class="g">Save for 25+ years.</span></h1>
     <p class="lede">Enter your monthly electricity bill below. We will calculate the system size you need, apply your government subsidy, and show exactly how fast it pays for itself.</p>
   </section>
 
@@ -286,15 +298,15 @@
 
     <p class="section-title" style="margin-top:22px;">Step 3 — How will you pay?</p>
     <div class="segmented" id="financeButtons">
-      <div class="seg-btn active" data-fin="cash">Pay Upfront</div>
       <div class="seg-btn" data-fin="loan">Bank Loan</div>
       <div class="seg-btn" data-fin="hybrid">Down Payment Plus Loan</div>
+      <div class="seg-btn active" data-fin="cash">Pay Upfront</div>
     </div>
 
     <div id="loanFields" style="display:none;">
       <div class="field-row">
         <div class="slider-field field">
-          <label>Loan interest rate, per year <span class="val" id="v-loanRate">9.0 percent</span></label>
+          <label>Loan interest rate, per year <span class="val" id="v-loanRate">9.0%</span></label>
           <input type="range" id="loanRate" min="6" max="15" step="0.1" value="9">
         </div>
         <div class="slider-field field">
@@ -303,20 +315,20 @@
         </div>
       </div>
       <div class="slider-field field" id="downPaymentField" style="display:none;">
-        <label>Down payment, as a percentage of net cost <span class="val" id="v-downPct">30 percent</span></label>
+        <label>Down payment, as a percentage of net cost <span class="val" id="v-downPct">30%</span></label>
         <input type="range" id="downPct" min="5" max="75" step="5" value="30">
       </div>
     </div>
 
-    <div class="assumptions-block">
-      <p class="section-title">Generation, Tariff, and Running Cost Assumptions</p>
+    <details class="assumptions-block">
+      <summary>Adjust generation, tariff and running cost assumptions</summary>
       <div class="adv-grid">
         <div class="slider-field field">
           <label>Cost per kilowatt of installed capacity (in Rupees) <span class="val" id="v-costPerKw">₹45,000</span></label>
           <input type="range" id="costPerKw" min="30000" max="65000" step="500" value="45000">
         </div>
         <div class="slider-field field">
-          <label>Combined Goods and Services Tax (GST) rate <span class="val" id="v-gst">8.9 percent</span></label>
+          <label>Combined Goods and Services Tax (GST) rate <span class="val" id="v-gst">8.9%</span></label>
           <input type="range" id="gst" min="0" max="18" step="0.1" value="8.9">
         </div>
         <div class="slider-field field">
@@ -328,7 +340,7 @@
           <input type="range" id="tariff" min="3" max="15" step="0.05" value="7.65">
         </div>
         <div class="slider-field field">
-          <label>Annual increase in electricity tariff <span class="val" id="v-tesc">3.0 percent</span></label>
+          <label>Annual increase in electricity tariff <span class="val" id="v-tesc">3.0%</span></label>
           <input type="range" id="tariffEsc" min="0" max="8" step="0.1" value="3">
         </div>
         <div class="slider-field field">
@@ -336,7 +348,7 @@
           <input type="range" id="omRate" min="0" max="1500" step="10" value="450">
         </div>
         <div class="slider-field field">
-          <label>Annual increase in Operation and Maintenance cost <span class="val" id="v-omesc">2.0 percent</span></label>
+          <label>Annual increase in Operation and Maintenance cost <span class="val" id="v-omesc">2.0%</span></label>
           <input type="range" id="omEsc" min="0" max="6" step="0.1" value="2">
         </div>
         <div class="slider-field field">
@@ -344,11 +356,11 @@
           <input type="range" id="insRate" min="0" max="500" step="5" value="0">
         </div>
         <div class="slider-field field">
-          <label>Annual increase in insurance cost <span class="val" id="v-insesc">5.0 percent</span></label>
+          <label>Annual increase in insurance cost <span class="val" id="v-insesc">5.0%</span></label>
           <input type="range" id="insEsc" min="0" max="10" step="0.5" value="5">
         </div>
       </div>
-    </div>
+    </details>
   </div>
 
   <!-- RESULTS -->
@@ -356,7 +368,7 @@
     <div class="headline-box" id="headlineBox">
       <div class="hb-label" id="hbLabel">Estimated payback period</div>
       <div class="hb-value" id="hbValue">3.8 years</div>
-      <div class="hb-sub" id="hbSub">then twenty-one plus years of free electricity</div>
+      <div class="hb-sub" id="hbSub">then 21+ years of free electricity</div>
     </div>
 
     <div class="results-grid">
@@ -392,13 +404,13 @@
       </div>
 
       <div class="panel" style="padding:22px;">
-        <p class="section-title">Investment recovery over twenty-five years</p>
+        <p class="section-title">Investment recovery over 25 years</p>
         <canvas id="chartCanvas"></canvas>
         <div class="metric-row" style="margin-top:4px;">
           <div class="metric-card" style="background:linear-gradient(180deg,var(--green) 0%, var(--green-2) 100%);">
             <div class="m-label">Total savings</div>
             <div class="m-value" id="out-lifetime">₹31,42,000</div>
-            <div class="m-sub">over twenty-five years</div>
+            <div class="m-sub">over 25 years</div>
           </div>
         </div>
       </div>
@@ -413,7 +425,7 @@
     </div>
 
     <details class="year-table">
-      <summary>See the complete year-by-year breakdown for all twenty-five years</summary>
+      <summary>See the complete year-by-year breakdown for all 25 years</summary>
       <div class="table-scroll">
         <table>
           <thead>
@@ -434,11 +446,11 @@
   <section class="cta">
     <h3>Go Solar Today</h3>
     <p>Save money. Save the planet.</p>
-    <a class="wa-btn" id="ctaWaBtn" href="#" target="_blank" rel="noopener">Send quotation on WhatsApp</a>
+    <a class="wa-btn" id="ctaWaBtn" href="#" target="_blank" rel="noopener">Request for site visit on WhatsApp</a>
   </section>
 
   <section class="trust">
-    <span class="trust-title">We provide complete solar solutions</span>
+    <span class="trust-title">Gutha Group Provides Complete Solar Solutions</span>
     <div class="trust-grid">
       <div class="trust-item"><div class="icon">📐</div>Expert Site Survey and Design</div>
       <div class="trust-item"><div class="icon">☀</div>Quality Equipment</div>
@@ -456,6 +468,8 @@
 
 <script>
 const $ = id => document.getElementById(id);
+const CURRENT_YEAR = new Date().getFullYear();
+const calendarYear = y => CURRENT_YEAR + (y-1);
 
 let state = { segment:'home', finance:'cash' };
 
@@ -636,17 +650,17 @@ let chart, gapChart;
 
 function render(){
   $('v-costPerKw').textContent = '₹'+(+$('costPerKw').value).toLocaleString('en-IN');
-  $('v-gst').textContent = (+$('gst').value).toFixed(1)+' percent';
+  $('v-gst').textContent = (+$('gst').value).toFixed(1)+'%';
   $('v-gen').textContent = (+$('genFactor').value).toFixed(1);
   $('v-tariff').textContent = '₹'+(+$('tariff').value).toFixed(2);
-  $('v-tesc').textContent = (+$('tariffEsc').value).toFixed(1)+' percent';
+  $('v-tesc').textContent = (+$('tariffEsc').value).toFixed(1)+'%';
   $('v-om').textContent = '₹'+(+$('omRate').value);
-  $('v-omesc').textContent = (+$('omEsc').value).toFixed(1)+' percent';
+  $('v-omesc').textContent = (+$('omEsc').value).toFixed(1)+'%';
   $('v-ins').textContent = '₹'+(+$('insRate').value);
-  $('v-insesc').textContent = (+$('insEsc').value).toFixed(1)+' percent';
-  $('v-loanRate').textContent = (+$('loanRate').value).toFixed(1)+' percent';
+  $('v-insesc').textContent = (+$('insEsc').value).toFixed(1)+'%';
+  $('v-loanRate').textContent = (+$('loanRate').value).toFixed(1)+'%';
   $('v-loanTenure').textContent = (+$('loanTenure').value)+' years';
-  $('v-downPct').textContent = (+$('downPct').value)+' percent';
+  $('v-downPct').textContent = (+$('downPct').value)+'%';
 
   const sys = computeSystem();
   window._sys = sys;
@@ -687,7 +701,7 @@ function render(){
   $('out-lifetime').textContent = fmtINR(recovery.lifetime);
 
   // investment recovery chart
-  const labels = recovery.rows.map(r=>'Year '+r.y);
+  const labels = recovery.rows.map(r=>String(calendarYear(r.y)));
   const data = recovery.rows.map(r=>r.cumulative);
   if(chart){
     chart.data.labels = labels;
@@ -714,12 +728,13 @@ function render(){
       options:{
         responsive:true, maintainAspectRatio:false,
         plugins:{legend:{display:false}, tooltip:{
-          backgroundColor:'#0F2A47', titleFont:{family:'JetBrains Mono'}, bodyFont:{family:'JetBrains Mono'},
+          backgroundColor:'#0F2A47', titleFont:{family:'Inter', size:13, weight:'600'},
+          bodyFont:{family:'Inter', size:13}, padding:10,
           callbacks:{label:c=>fmtINR(c.parsed.y)}
         }},
         scales:{
-          x:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}}},
-          y:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}, callback:v=>fmtINR(v)}}
+          x:{grid:{color:'#EFE7D3'}, ticks:{color:'#3A4A61', font:{size:12, weight:'600'}, maxRotation:0, autoSkip:true, maxTicksLimit:9}},
+          y:{grid:{color:'#EFE7D3'}, ticks:{color:'#3A4A61', font:{size:11, weight:'600'}, callback:v=>fmtINR(v)}}
         }
       }
     });
@@ -727,7 +742,7 @@ function render(){
 
   // bill vs payment widening-gap data
   const gapRows = runBillVsPayment(monthlyEmi, tenure);
-  const gapLabels = gapRows.map(r=>'Year '+r.y);
+  const gapLabels = gapRows.map(r=>String(calendarYear(r.y)));
   const billData = gapRows.map(r=>r.billAnnual);
   const payData = gapRows.map(r=>r.youPay);
 
@@ -758,15 +773,16 @@ function render(){
       options:{
         responsive:true, maintainAspectRatio:false,
         plugins:{
-          legend:{display:true, position:'bottom', labels:{color:'#16233A', font:{size:11.5}, boxWidth:14, padding:16}},
+          legend:{display:true, position:'bottom', labels:{color:'#16233A', font:{size:13, weight:'600'}, boxWidth:16, boxHeight:3, padding:18, usePointStyle:false}},
           tooltip:{
-            backgroundColor:'#0F2A47', titleFont:{family:'JetBrains Mono'}, bodyFont:{family:'JetBrains Mono'},
+            backgroundColor:'#0F2A47', titleFont:{family:'Inter', size:13, weight:'600'},
+            bodyFont:{family:'Inter', size:13}, padding:10,
             callbacks:{label:c=>c.dataset.label+': '+fmtINR(c.parsed.y)}
           }
         },
         scales:{
-          x:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}}},
-          y:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}, callback:v=>fmtINR(v)}}
+          x:{grid:{color:'#EFE7D3'}, ticks:{color:'#3A4A61', font:{size:12, weight:'600'}, maxRotation:0, autoSkip:true, maxTicksLimit:9}},
+          y:{grid:{color:'#EFE7D3'}, ticks:{color:'#3A4A61', font:{size:11, weight:'600'}, callback:v=>fmtINR(v)}}
         }
       }
     });
@@ -776,7 +792,7 @@ function render(){
   const tbody = $('yearTableBody');
   tbody.innerHTML = gapRows.map(r=>`
     <tr>
-      <td>Year ${r.y}</td>
+      <td>${calendarYear(r.y)}</td>
       <td>${fmtINR(r.billAnnual)}</td>
       <td>${fmtINR(r.youPay)}</td>
       <td class="${r.saving>=0?'pos':'neg'}">${fmtINR(r.saving)}</td>
@@ -793,7 +809,7 @@ function render(){
     `Net cost after subsidy: ${fmtINR(sys.netCost)}\n`+
     `Payment plan: ${finLabel}\n`+
     `I would like to book a free site survey.`;
-  const waLink = 'https://wa.me/919121980386?text=' + encodeURIComponent(msg);
+  const waLink = 'https://wa.me/919949111103?text=' + encodeURIComponent(msg);
   $('ctaWaBtn').href = waLink;
   $('headerWaBtn').href = waLink;
 }
