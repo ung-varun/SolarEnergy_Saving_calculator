@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gutha Group | Solar Savings Calculator</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F2A47">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gutha Solar">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --cream:#FBF7EF;
+    --cream-2:#F3ECDD;
+    --navy:#0F2A47;
+    --navy-2:#153756;
+    --navy-3:#0A1E33;
+    --gold:#D9A441;
+    --gold-2:#F0C36B;
+    --green:#1F7A3D;
+    --green-2:#2E9A50;
+    --red:#B23A2F;
+    --text:#16233A;
+    --muted:#5C6B80;
+    --line:#E4DAC4;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+  a{color:inherit;}
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+    padding:16px 0;
+  }
+  .top-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .logo{display:flex;align-items:center;gap:14px;}
+  .logo-mark{
+    width:52px;height:52px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold) 70%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Playfair Display',serif;font-weight:700;color:var(--navy);
+    font-size:20px;letter-spacing:-2px;flex:none;
+    box-shadow:inset 0 0 0 2px rgba(15,42,71,0.15);
+  }
+  .logo-text .name{
+    font-family:'Playfair Display',serif;font-weight:700;color:var(--navy);
+    font-size:21px;line-height:1.1;letter-spacing:.01em;
+  }
+  .logo-text .sub{
+    font-family:'Inter',sans-serif;font-weight:600;color:var(--gold);
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  }
+  .top-cta{
+    display:flex;align-items:center;gap:10px;
+    background:var(--green);color:#fff;padding:10px 18px;border-radius:999px;
+    font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap;
+  }
+  .top-cta:hover{background:var(--green-2);}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:44px 0 28px;}
+  .ribbon{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--navy);color:var(--gold-2);
+    font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    padding:7px 14px;border-radius:999px;margin-bottom:18px;
+  }
+  h1{
+    font-family:'Playfair Display',serif;
+    font-size:clamp(28px,4.2vw,42px);
+    line-height:1.15;margin:0 0 6px;color:var(--navy);
+  }
+  h1 .g{color:var(--green);}
+  .hero p.lede{color:var(--muted);font-size:16px;max-width:600px;margin:14px 0 0;line-height:1.6;}
+
+  /* ---------- CARD / PANEL ---------- */
+  .panel{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:26px;
+  }
+  .section-title{
+    font-family:'Inter',sans-serif;font-weight:700;font-size:12px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--gold);
+    margin:0 0 14px;
+  }
+
+  /* segmented control */
+  .segmented{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+  .seg-btn{
+    flex:1;min-width:120px;text-align:center;
+    background:var(--cream-2);border:1.5px solid var(--line);color:var(--navy);
+    padding:12px 10px;border-radius:10px;font-weight:600;font-size:13.5px;
+    cursor:pointer;transition:.15s;
+  }
+  .seg-btn.active{
+    background:var(--navy);border-color:var(--navy);color:#fff;
+  }
+  .seg-btn:hover:not(.active){border-color:var(--gold);}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13.5px;color:var(--muted);margin-bottom:6px;font-weight:500;}
+  .field input[type=number]{
+    width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--navy);
+    background:var(--cream-2);outline:none;
+  }
+  .field input[type=number]:focus{border-color:var(--gold);}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:520px){.field-row{grid-template-columns:1fr;}}
+
+  .slider-field label{
+    display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:8px;
+  }
+  .slider-field label span.val{font-family:'JetBrains Mono',monospace;color:var(--navy);font-weight:600;}
+  input[type=range]{-webkit-appearance:none;width:100%;height:5px;background:var(--line);border-radius:3px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--gold);cursor:pointer;border:3px solid #fff;box-shadow:0 0 0 1px var(--gold);
+  }
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);border:3px solid #fff;cursor:pointer;}
+
+  .assumptions-block{margin-top:8px;padding-top:18px;border-top:1px solid var(--line);}
+  .adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
+  @media (max-width:520px){.adv-grid{grid-template-columns:1fr;}}
+
+  /* ---------- RESULTS ---------- */
+  .results-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;margin-top:20px;}
+  @media (max-width:860px){.results-grid{grid-template-columns:1fr;}}
+
+  .metric-card{
+    background:linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;border-radius:16px;padding:24px;
+  }
+  .metric-card .m-label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-2);margin-bottom:6px;}
+  .metric-card .m-value{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;margin-bottom:2px;word-break:break-word;}
+  .metric-card .m-sub{font-size:12.5px;color:#B9C6D6;}
+  .metric-row{display:flex;gap:22px;flex-wrap:wrap;margin-top:14px;}
+  .metric-row .metric-card{flex:1;min-width:170px;padding:18px;}
+  .metric-row .m-value{font-size:22px;}
+
+  .headline-box{
+    text-align:center;background:var(--green);color:#fff;border-radius:16px;
+    padding:26px 20px;margin-bottom:18px;
+  }
+  .headline-box .hb-label{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.85;margin-bottom:6px;}
+  .headline-box .hb-value{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(26px,4.6vw,40px);line-height:1.15;word-break:break-word;}
+  .headline-box .hb-sub{font-size:13.5px;margin-top:8px;opacity:.9;}
+
+  #chartCanvas, #gapChartCanvas{width:100% !important;height:230px !important;}
+
+  .subsidy-note{
+    background:var(--cream-2);border:1px dashed var(--gold);border-radius:10px;
+    padding:12px 14px;font-size:13px;color:var(--navy-2);margin-top:14px;line-height:1.55;
+  }
+
+  /* ---------- YEAR BY YEAR TABLE ---------- */
+  details.year-table{margin-top:24px;}
+  details.year-table summary{
+    cursor:pointer;list-style:none;
+    background:var(--navy);color:#fff;padding:14px 20px;border-radius:12px;
+    font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;
+  }
+  details.year-table summary::-webkit-details-marker{display:none;}
+  details.year-table summary::after{content:"Show table";font-size:12.5px;color:var(--gold-2);font-weight:600;}
+  details.year-table[open] summary::after{content:"Hide table";}
+  .table-scroll{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:12px;}
+  table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12.5px;min-width:640px;}
+  th{
+    text-align:right;color:var(--white);font-weight:600;background:var(--navy-2);
+    padding:10px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  }
+  th:first-child,td:first-child{text-align:left;}
+  td{text-align:right;padding:9px 14px;border-bottom:1px solid var(--line);color:var(--text);background:var(--white);}
+  tr:nth-child(even) td{background:var(--cream-2);}
+  .pos{color:var(--green);font-weight:600;}
+  .neg{color:var(--muted);}
+
+  /* ---------- TRUST STRIP ---------- */
+  .trust{margin:32px 0 8px;}
+  .trust-title{
+    text-align:center;background:var(--navy);color:#fff;display:inline-block;
+    padding:9px 22px;border-radius:999px;font-size:12.5px;font-weight:600;
+    letter-spacing:.06em;text-transform:uppercase;margin:0 auto 22px;display:block;width:fit-content;
+  }
+  .trust-grid{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
+    border:1px solid var(--line);border-radius:14px;padding:22px;background:var(--white);
+  }
+  @media (max-width:760px){.trust-grid{grid-template-columns:repeat(2,1fr);}}
+  .trust-item{text-align:center;font-size:12.5px;color:var(--navy);font-weight:600;line-height:1.35;}
+  .trust-item .icon{
+    width:46px;height:46px;border-radius:50%;margin:0 auto 10px;
+    background:var(--cream-2);display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--green);color:var(--green);font-size:20px;
+  }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    margin:40px 0 0;border-radius:16px;overflow:hidden;
+    background:var(--green);color:#fff;padding:34px 30px;text-align:center;
+    border:1px solid var(--line);
+  }
+  .cta h3{font-family:'Playfair Display',serif;font-size:26px;margin:0 0 8px;}
+  .cta p{margin:0 0 22px;font-size:14.5px;opacity:.92;}
+  .wa-btn{
+    display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--green);
+    padding:14px 26px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;
+  }
+
+  footer{
+    text-align:center;padding:28px 20px 40px;font-size:12.5px;color:var(--muted);
+  }
+  footer a{color:var(--navy-2);font-weight:600;text-decoration:none;border-bottom:1px solid var(--gold);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="logo">
+      <div class="logo-mark">GG</div>
+      <div class="logo-text">
+        <div class="name">Gutha Group</div>
+        <div class="sub">Energy &amp; Infra Pvt. Ltd.</div>
+      </div>
+    </div>
+    <a class="top-cta" id="headerWaBtn" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="ribbon">Powering a cleaner and brighter tomorrow</span>
+    <h1>Cut your electricity bill.<br>Invest once. <span class="g">Save for twenty-five plus years.</span></h1>
+    <p class="lede">Enter your monthly electricity bill below. We will calculate the system size you need, apply your government subsidy, and show exactly how fast it pays for itself.</p>
+  </section>
+
+  <div class="panel">
+    <p class="section-title">Step One — Who is this for?</p>
+    <div class="segmented" id="segmentButtons">
+      <div class="seg-btn active" data-seg="home">Home</div>
+      <div class="seg-btn" data-seg="apartment">Apartment or Society</div>
+      <div class="seg-btn" data-seg="business">Business</div>
+    </div>
+
+    <p class="section-title">Step Two — Your electricity bill</p>
+    <div id="billFields">
+      <div class="field" id="fieldSimpleBill">
+        <label id="labelSimpleBill">Your average monthly electricity bill (in Rupees)</label>
+        <input type="number" id="simpleBill" value="4500" min="100" step="50">
+      </div>
+      <div class="field-row" id="fieldApartmentExtra" style="display:none;">
+        <div class="field">
+          <label>Common area monthly electricity bill — lifts, lobby, parking, lighting (in Rupees)</label>
+          <input type="number" id="apartmentBill" value="45000" min="500" step="500">
+        </div>
+        <div class="field">
+          <label>Number of flats or units in the society</label>
+          <input type="number" id="flatsCount" value="80" min="1" step="1">
+        </div>
+      </div>
+    </div>
+
+    <p class="section-title" style="margin-top:22px;">Step Three — How will you pay?</p>
+    <div class="segmented" id="financeButtons">
+      <div class="seg-btn active" data-fin="cash">Pay Upfront</div>
+      <div class="seg-btn" data-fin="loan">Bank Loan</div>
+      <div class="seg-btn" data-fin="hybrid">Down Payment Plus Loan</div>
+    </div>
+
+    <div id="loanFields" style="display:none;">
+      <div class="field-row">
+        <div class="slider-field field">
+          <label>Loan interest rate, per year <span class="val" id="v-loanRate">9.0 percent</span></label>
+          <input type="range" id="loanRate" min="6" max="15" step="0.1" value="9">
+        </div>
+        <div class="slider-field field">
+          <label>Loan repayment period <span class="val" id="v-loanTenure">5 years</span></label>
+          <input type="range" id="loanTenure" min="1" max="10" step="1" value="5">
+        </div>
+      </div>
+      <div class="slider-field field" id="downPaymentField" style="display:none;">
+        <label>Down payment, as a percentage of net cost <span class="val" id="v-downPct">30 percent</span></label>
+        <input type="range" id="downPct" min="5" max="75" step="5" value="30">
+      </div>
+    </div>
+
+    <div class="assumptions-block">
+      <p class="section-title">Generation, Tariff, and Running Cost Assumptions</p>
+      <div class="adv-grid">
+        <div class="slider-field field">
+          <label>Cost per kilowatt of installed capacity (in Rupees) <span class="val" id="v-costPerKw">₹45,000</span></label>
+          <input type="range" id="costPerKw" min="30000" max="65000" step="500" value="45000">
+        </div>
+        <div class="slider-field field">
+          <label>Combined Goods and Services Tax (GST) rate <span class="val" id="v-gst">8.9 percent</span></label>
+          <input type="range" id="gst" min="0" max="18" step="0.1" value="8.9">
+        </div>
+        <div class="slider-field field">
+          <label>Solar generation factor, units per kilowatt per day <span class="val" id="v-gen">4.5</span></label>
+          <input type="range" id="genFactor" min="3" max="6" step="0.1" value="4.5">
+        </div>
+        <div class="slider-field field">
+          <label>Your electricity tariff, per unit (in Rupees) <span class="val" id="v-tariff">₹7.65</span></label>
+          <input type="range" id="tariff" min="3" max="15" step="0.05" value="7.65">
+        </div>
+        <div class="slider-field field">
+          <label>Annual increase in electricity tariff <span class="val" id="v-tesc">3.0 percent</span></label>
+          <input type="range" id="tariffEsc" min="0" max="8" step="0.1" value="3">
+        </div>
+        <div class="slider-field field">
+          <label>Operation and Maintenance rate, per kilowatt from Year Two <span class="val" id="v-om">₹450</span></label>
+          <input type="range" id="omRate" min="0" max="1500" step="10" value="450">
+        </div>
+        <div class="slider-field field">
+          <label>Annual increase in Operation and Maintenance cost <span class="val" id="v-omesc">2.0 percent</span></label>
+          <input type="range" id="omEsc" min="0" max="6" step="0.1" value="2">
+        </div>
+        <div class="slider-field field">
+          <label>Insurance rate, per kilowatt from Year Two <span class="val" id="v-ins">₹0</span></label>
+          <input type="range" id="insRate" min="0" max="500" step="5" value="0">
+        </div>
+        <div class="slider-field field">
+          <label>Annual increase in insurance cost <span class="val" id="v-insesc">5.0 percent</span></label>
+          <input type="range" id="insEsc" min="0" max="10" step="0.5" value="5">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div style="margin-top:24px;">
+    <div class="headline-box" id="headlineBox">
+      <div class="hb-label" id="hbLabel">Estimated payback period</div>
+      <div class="hb-value" id="hbValue">3.8 years</div>
+      <div class="hb-sub" id="hbSub">then twenty-one plus years of free electricity</div>
+    </div>
+
+    <div class="results-grid">
+      <div class="panel" style="padding:22px;">
+        <p class="section-title">Your recommended system</p>
+        <div class="metric-row">
+          <div class="metric-card">
+            <div class="m-label">Recommended capacity</div>
+            <div class="m-value" id="out-kw">6.5 kilowatts</div>
+            <div class="m-sub" id="out-kwSub">based on your bill</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-label">System cost</div>
+            <div class="m-value" id="out-gross">₹2,93,000</div>
+            <div class="m-sub">including GST</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-card">
+            <div class="m-label">Government subsidy</div>
+            <div class="m-value" id="out-subsidy">₹78,000</div>
+            <div class="m-sub" id="out-subsidySub">PM Surya Ghar: Muft Bijli Yojana</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-label">Your net cost</div>
+            <div class="m-value" id="out-net">₹2,15,000</div>
+            <div class="m-sub" id="out-netSub">after subsidy</div>
+          </div>
+        </div>
+        <div class="subsidy-note" id="subsidyNote">
+          Central subsidy under PM Surya Ghar: Muft Bijli Yojana — ₹30,000 per kilowatt for the first two kilowatts, plus ₹18,000 for the third kilowatt, capped at ₹78,000 for residential systems of three kilowatts or more.
+        </div>
+      </div>
+
+      <div class="panel" style="padding:22px;">
+        <p class="section-title">Investment recovery over twenty-five years</p>
+        <canvas id="chartCanvas"></canvas>
+        <div class="metric-row" style="margin-top:4px;">
+          <div class="metric-card" style="background:linear-gradient(180deg,var(--green) 0%, var(--green-2) 100%);">
+            <div class="m-label">Total savings</div>
+            <div class="m-value" id="out-lifetime">₹31,42,000</div>
+            <div class="m-sub">over twenty-five years</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="padding:22px;margin-top:20px;">
+      <p class="section-title" id="gapTitle">Your electricity bill without solar, compared with what you actually pay</p>
+      <canvas id="gapChartCanvas"></canvas>
+      <div class="subsidy-note" id="gapNote" style="margin-top:16px;">
+        The gold line is the electricity bill you would keep paying if you never installed solar, rising every year with tariff increases. The green line is what you actually pay after going solar. The gap between the two lines, shaded in green, is money that stays in your pocket every single year.
+      </div>
+    </div>
+
+    <details class="year-table">
+      <summary>See the complete year-by-year breakdown for all twenty-five years</summary>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Electricity Bill Without Solar</th>
+              <th>Amount You Actually Pay</th>
+              <th>Your Savings This Year</th>
+              <th>Cumulative Savings</th>
+            </tr>
+          </thead>
+          <tbody id="yearTableBody"></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h3>Go Solar Today</h3>
+    <p>Save money. Save the planet.</p>
+    <a class="wa-btn" id="ctaWaBtn" href="#" target="_blank" rel="noopener">Send my numbers on WhatsApp</a>
+  </section>
+
+  <section class="trust">
+    <span class="trust-title">We provide complete solar solutions</span>
+    <div class="trust-grid">
+      <div class="trust-item"><div class="icon">📐</div>Expert Site Survey and Design</div>
+      <div class="trust-item"><div class="icon">☀</div>Quality Equipment</div>
+      <div class="trust-item"><div class="icon">🔧</div>Professional Installation</div>
+      <div class="trust-item"><div class="icon">📈</div>Monitoring and Performance Tracking</div>
+      <div class="trust-item"><div class="icon">🎧</div>After Sales Support</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Developed by <a href="https://www.linkedin.com/in/varunu/" target="_blank" rel="noopener">Varun Kumar Ungurala</a>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let state = { segment:'home', finance:'cash' };
+
+document.querySelectorAll('#segmentButtons .seg-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#segmentButtons .seg-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.segment = btn.dataset.seg;
+    updateFieldVisibility();
+    render();
+  });
+});
+
+document.querySelectorAll('#financeButtons .seg-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#financeButtons .seg-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.finance = btn.dataset.fin;
+    updateFieldVisibility();
+    render();
+  });
+});
+
+function updateFieldVisibility(){
+  const isApt = state.segment==='apartment';
+  $('fieldSimpleBill').style.display = isApt ? 'none' : 'block';
+  $('fieldApartmentExtra').style.display = isApt ? 'grid' : 'none';
+
+  const showLoan = state.finance==='loan' || state.finance==='hybrid';
+  $('loanFields').style.display = showLoan ? 'block' : 'none';
+  $('downPaymentField').style.display = state.finance==='hybrid' ? 'block' : 'none';
+
+  $('gapTitle').textContent = state.finance==='cash'
+    ? 'Your electricity bill without solar, compared with what you actually pay'
+    : 'Your electricity bill without solar, compared with your loan repayment';
+}
+
+const sliderIds = ['costPerKw','gst','genFactor','tariff','tariffEsc','omRate','omEsc','insRate','insEsc','loanRate','loanTenure','downPct'];
+sliderIds.forEach(id=>{
+  const el = $(id);
+  if(el) el.addEventListener('input', render);
+});
+['simpleBill','apartmentBill','flatsCount'].forEach(id=> $(id).addEventListener('input', render));
+
+const fmtINR = n => '₹' + Math.round(n).toLocaleString('en-IN');
+
+function homeSubsidy(kw){
+  if(kw<=2) return 30000*kw;
+  return 60000 + 18000*Math.min(kw-2,1);
+}
+function apartmentSubsidy(kw, flats){
+  const cap = Math.min(kw, 3*flats, 500);
+  return 18000*cap;
+}
+
+function computeSystem(){
+  const costPerKw = +$('costPerKw').value;
+  const gstPct = +$('gst').value/100;
+  const genFactor = +$('genFactor').value;
+  const tariff = +$('tariff').value;
+
+  let monthlyBill;
+  let flats = 0;
+  if(state.segment==='apartment'){
+    monthlyBill = +$('apartmentBill').value;
+    flats = +$('flatsCount').value || 1;
+  } else {
+    monthlyBill = +$('simpleBill').value;
+  }
+
+  const monthlyUnits = monthlyBill/tariff;
+  const annualUnits = monthlyUnits*12;
+  let kw = annualUnits/(365*genFactor);
+  kw = Math.max(0.5, Math.round(kw*10)/10);
+
+  const baseCost = costPerKw*kw;
+  const gst = baseCost*gstPct;
+  const grossCost = baseCost+gst;
+
+  let subsidy = 0, subsidyLabel='';
+  if(state.segment==='home'){
+    subsidy = homeSubsidy(kw);
+    subsidyLabel = 'PM Surya Ghar: Muft Bijli Yojana, residential category — ₹30,000 per kilowatt for the first two kilowatts, plus ₹18,000 for the third kilowatt, capped at ₹78,000 for systems of three kilowatts or more.';
+  } else if(state.segment==='apartment'){
+    subsidy = apartmentSubsidy(kw, flats);
+    subsidyLabel = `PM Surya Ghar: Muft Bijli Yojana, Group Housing Society and Resident Welfare Association category — ₹18,000 per kilowatt for common facilities, capped at three kilowatts per flat (${flats} flats) and five hundred kilowatts overall.`;
+  } else {
+    subsidy = 0;
+    subsidyLabel = 'The central residential subsidy does not apply to commercial electricity connections. Please check separately for any state-level industrial or commercial incentives.';
+  }
+  subsidy = Math.min(subsidy, grossCost);
+  const netCost = grossCost - subsidy;
+
+  return {monthlyBill, flats, kw, grossCost, subsidy, subsidyLabel, netCost, tariff};
+}
+
+function runInvestmentRecovery(upfrontPaid, financingCostByYear){
+  const tariffEsc = +$('tariffEsc').value/100;
+  const omEsc = +$('omEsc').value/100;
+  const insEsc = +$('insEsc').value/100;
+  const genFactor = +$('genFactor').value;
+  const omRate0 = +$('omRate').value;
+  const insRate0 = +$('insRate').value;
+  const {kw, tariff} = window._sys;
+
+  let gen = kw*genFactor*365;
+  let tariffRate = tariff;
+  let om=0, ins=0;
+  let cumulative = -upfrontPaid;
+  let paybackYear = null;
+  const rows = [];
+
+  for(let y=1;y<=25;y++){
+    if(y===2) gen = gen*(1-0.025);
+    else if(y>2) gen = gen*(1-0.007);
+    if(y>1) tariffRate = tariffRate*(1+tariffEsc);
+
+    const savings = gen*tariffRate;
+
+    if(y===1){om=0;ins=0;}
+    else if(y===2){om=omRate0*kw; ins=insRate0*kw;}
+    else {om=om*(1+omEsc); ins=ins*(1+insEsc);}
+
+    const opex = om+ins;
+    const financingCost = financingCostByYear(y);
+    const net = savings - opex - financingCost;
+    const prevCum = cumulative;
+    cumulative += net;
+
+    if(paybackYear===null && cumulative>=0){
+      const frac = net!==0 ? (prevCum/-net) : 0;
+      paybackYear = (y-1)+Math.max(0,Math.min(1,frac));
+    }
+    rows.push({y, savings, opex, financingCost, net, cumulative});
+  }
+  return {rows, paybackYear, lifetime: rows[rows.length-1].cumulative};
+}
+
+function runBillVsPayment(monthlyEmiAmount, tenureYears){
+  const tariffEsc = +$('tariffEsc').value/100;
+  const omEsc = +$('omEsc').value/100;
+  const insEsc = +$('insEsc').value/100;
+  const omRate0 = +$('omRate').value;
+  const insRate0 = +$('insRate').value;
+  const {kw, monthlyBill} = window._sys;
+
+  let billAnnual = monthlyBill*12;
+  let om=0, ins=0;
+  let cumulativeSavings = 0;
+  const rows = [];
+
+  for(let y=1;y<=25;y++){
+    if(y>1) billAnnual = billAnnual*(1+tariffEsc);
+
+    if(y===1){om=0;ins=0;}
+    else if(y===2){om=omRate0*kw; ins=insRate0*kw;}
+    else {om=om*(1+omEsc); ins=ins*(1+insEsc);}
+
+    const opex = om+ins;
+    const financingCost = (state.finance!=='cash' && y<=tenureYears) ? monthlyEmiAmount*12 : 0;
+    const youPay = financingCost + opex;
+    const saving = billAnnual - youPay;
+    cumulativeSavings += saving;
+
+    rows.push({y, billAnnual, youPay, saving, cumulativeSavings});
+  }
+  return rows;
+}
+
+function emi(P, annualRatePct, years){
+  const r = annualRatePct/12/100;
+  const n = years*12;
+  if(r===0) return P/n;
+  return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+}
+
+let chart, gapChart;
+
+function render(){
+  $('v-costPerKw').textContent = '₹'+(+$('costPerKw').value).toLocaleString('en-IN');
+  $('v-gst').textContent = (+$('gst').value).toFixed(1)+' percent';
+  $('v-gen').textContent = (+$('genFactor').value).toFixed(1);
+  $('v-tariff').textContent = '₹'+(+$('tariff').value).toFixed(2);
+  $('v-tesc').textContent = (+$('tariffEsc').value).toFixed(1)+' percent';
+  $('v-om').textContent = '₹'+(+$('omRate').value);
+  $('v-omesc').textContent = (+$('omEsc').value).toFixed(1)+' percent';
+  $('v-ins').textContent = '₹'+(+$('insRate').value);
+  $('v-insesc').textContent = (+$('insEsc').value).toFixed(1)+' percent';
+  $('v-loanRate').textContent = (+$('loanRate').value).toFixed(1)+' percent';
+  $('v-loanTenure').textContent = (+$('loanTenure').value)+' years';
+  $('v-downPct').textContent = (+$('downPct').value)+' percent';
+
+  const sys = computeSystem();
+  window._sys = sys;
+
+  $('out-kw').textContent = sys.kw.toFixed(1)+' kilowatts';
+  $('out-kwSub').textContent = state.segment==='apartment' ? 'for common area load' : 'based on your bill';
+  $('out-gross').textContent = fmtINR(sys.grossCost);
+  $('out-subsidy').textContent = sys.subsidy>0 ? fmtINR(sys.subsidy) : 'Not applicable';
+  $('out-subsidySub').textContent = state.segment==='business' ? 'central scheme not applicable' : 'PM Surya Ghar: Muft Bijli Yojana';
+  $('out-net').textContent = fmtINR(sys.netCost);
+  $('out-netSub').textContent = sys.subsidy>0 ? 'after subsidy' : 'no central subsidy applied';
+  $('subsidyNote').textContent = sys.subsidyLabel;
+
+  let recovery, monthlyEmi=0, downPaymentAmt=0, loanAmt=0;
+  const tenure = +$('loanTenure').value;
+  const rate = +$('loanRate').value;
+
+  if(state.finance==='cash'){
+    recovery = runInvestmentRecovery(sys.netCost, ()=>0);
+    $('hbLabel').textContent = 'Estimated payback period';
+    $('hbValue').textContent = (recovery.paybackYear? recovery.paybackYear.toFixed(1):'more than 25')+' years';
+    $('hbSub').textContent = `then approximately ${(25-(recovery.paybackYear||25)).toFixed(1)} years of free electricity`;
+  } else {
+    loanAmt = state.finance==='hybrid' ? sys.netCost*(1-(+$('downPct').value/100)) : sys.netCost;
+    downPaymentAmt = sys.netCost - loanAmt;
+    monthlyEmi = emi(loanAmt, rate, tenure);
+    const financingCostByYear = y => (y<=tenure ? monthlyEmi*12 : 0);
+    recovery = runInvestmentRecovery(downPaymentAmt, financingCostByYear);
+
+    const monthlyDiff = sys.monthlyBill - monthlyEmi;
+    $('hbLabel').textContent = monthlyDiff>=0 ? 'Your monthly saving from day one' : 'Your monthly loan repayment compared with your bill';
+    $('hbValue').textContent = (monthlyDiff>=0? fmtINR(monthlyDiff):fmtINR(monthlyEmi));
+    $('hbSub').textContent = monthlyDiff>=0
+      ? `Your loan repayment is approximately ${fmtINR(monthlyEmi)} per month, which is less than your current bill of ${fmtINR(sys.monthlyBill)}`
+      : `Your loan repayment is approximately ${fmtINR(monthlyEmi)} per month, compared with your current bill of ${fmtINR(sys.monthlyBill)}. Your savings grow larger after the loan is fully repaid.`;
+  }
+
+  $('out-lifetime').textContent = fmtINR(recovery.lifetime);
+
+  // investment recovery chart
+  const labels = recovery.rows.map(r=>'Year '+r.y);
+  const data = recovery.rows.map(r=>r.cumulative);
+  if(chart){
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = data;
+    chart.update();
+  } else {
+    const ctx = $('chartCanvas').getContext('2d');
+    chart = new Chart(ctx, {
+      type:'line',
+      data:{labels, datasets:[{
+        data, borderWidth:2.4, pointRadius:0, tension:.3,
+        segment:{borderColor: c => (c.p0.parsed.y<0 && c.p1.parsed.y<0) ? '#B7A46A' : '#1F7A3D'},
+        fill:{target:{value:0}},
+        backgroundColor: c => {
+          const {chart}=c; const {ctx:cx,chartArea}=chart; if(!chartArea) return;
+          const g = cx.createLinearGradient(0,chartArea.top,0,chartArea.bottom);
+          g.addColorStop(0,'rgba(31,122,61,0.30)');
+          g.addColorStop(0.5,'rgba(31,122,61,0.05)');
+          g.addColorStop(0.5,'rgba(217,164,65,0.05)');
+          g.addColorStop(1,'rgba(217,164,65,0.22)');
+          return g;
+        }
+      }]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false}, tooltip:{
+          backgroundColor:'#0F2A47', titleFont:{family:'JetBrains Mono'}, bodyFont:{family:'JetBrains Mono'},
+          callbacks:{label:c=>fmtINR(c.parsed.y)}
+        }},
+        scales:{
+          x:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}}},
+          y:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}, callback:v=>fmtINR(v)}}
+        }
+      }
+    });
+  }
+
+  // bill vs payment widening-gap data
+  const gapRows = runBillVsPayment(monthlyEmi, tenure);
+  const gapLabels = gapRows.map(r=>'Year '+r.y);
+  const billData = gapRows.map(r=>r.billAnnual);
+  const payData = gapRows.map(r=>r.youPay);
+
+  if(gapChart){
+    gapChart.data.labels = gapLabels;
+    gapChart.data.datasets[0].data = billData;
+    gapChart.data.datasets[1].data = payData;
+    gapChart.update();
+  } else {
+    const gctx = $('gapChartCanvas').getContext('2d');
+    gapChart = new Chart(gctx, {
+      type:'line',
+      data:{
+        labels: gapLabels,
+        datasets:[
+          {
+            label:'Electricity bill without solar',
+            data: billData, borderColor:'#D9A441', backgroundColor:'rgba(217,164,65,0.12)',
+            borderWidth:2.4, pointRadius:0, tension:.25, fill:false
+          },
+          {
+            label:'Amount you actually pay',
+            data: payData, borderColor:'#1F7A3D', backgroundColor:'rgba(31,122,61,0.22)',
+            borderWidth:2.4, pointRadius:0, tension:.25, fill:'-1'
+          }
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{display:true, position:'bottom', labels:{color:'#16233A', font:{size:11.5}, boxWidth:14, padding:16}},
+          tooltip:{
+            backgroundColor:'#0F2A47', titleFont:{family:'JetBrains Mono'}, bodyFont:{family:'JetBrains Mono'},
+            callbacks:{label:c=>c.dataset.label+': '+fmtINR(c.parsed.y)}
+          }
+        },
+        scales:{
+          x:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}}},
+          y:{grid:{color:'#EFE7D3'}, ticks:{color:'#8a7c56', font:{size:10}, callback:v=>fmtINR(v)}}
+        }
+      }
+    });
+  }
+
+  // year-by-year table
+  const tbody = $('yearTableBody');
+  tbody.innerHTML = gapRows.map(r=>`
+    <tr>
+      <td>Year ${r.y}</td>
+      <td>${fmtINR(r.billAnnual)}</td>
+      <td>${fmtINR(r.youPay)}</td>
+      <td class="${r.saving>=0?'pos':'neg'}">${fmtINR(r.saving)}</td>
+      <td class="${r.cumulativeSavings>=0?'pos':'neg'}">${fmtINR(r.cumulativeSavings)}</td>
+    </tr>
+  `).join('');
+
+  // WhatsApp CTA text
+  const finLabel = state.finance==='cash' ? 'paying upfront in one payment' : (state.finance==='loan' ? 'through a bank loan' : 'through a down payment plus a bank loan');
+  const msg = `Hi Gutha Group, I used your solar savings calculator.\n`+
+    `Category: ${state.segment}\n`+
+    `Monthly electricity bill: ${fmtINR(sys.monthlyBill)}\n`+
+    `Recommended system size: ${sys.kw.toFixed(1)} kilowatts\n`+
+    `Net cost after subsidy: ${fmtINR(sys.netCost)}\n`+
+    `Payment plan: ${finLabel}\n`+
+    `I would like to book a free site survey.`;
+  const waLink = 'https://wa.me/919121980386?text=' + encodeURIComponent(msg);
+  $('ctaWaBtn').href = waLink;
+  $('headerWaBtn').href = waLink;
+}
+
+updateFieldVisibility();
+render();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
